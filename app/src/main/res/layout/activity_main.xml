@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:padding="16dp" android:background="#000000">
+
+    <TextView
+            android:text="IP address:"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp" android:id="@+id/ip_label" android:visibility="gone"
+            android:textColor="#42D818" tools:visibility="gone"/>
+
+    <EditText
+            android:id="@+id/ip_text"
+            android:hint="192.168.0.1"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:visibility="gone" android:textColor="#42D818"
+            tools:visibility="gone" android:textColorHint="#42D818" android:backgroundTint="#42D818"/>
+    <TextView
+            android:text="Port number:"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp" android:id="@+id/port_label" android:visibility="gone"
+            android:textColor="#42D818" tools:visibility="gone"/>
+
+    <EditText
+            android:id="@+id/port_text"
+            android:hint="9999"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:visibility="gone" android:textColor="#42D818"
+            tools:visibility="gone" android:textColorHint="#42D818" android:backgroundTint="#42D818"/>
+
+    <TextView
+            android:text="Nickname:"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize="16sp" android:id="@+id/nick_label"
+            android:textColor="#42D818"/>
+
+    <EditText
+            android:id="@+id/nickname_text"
+            android:hint="Enter your nickname"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textColor="#42D818" android:backgroundTint="#42D818"
+            android:textColorHint="#42D818"/>
+
+    <Switch
+            android:text="CustomServer"
+            android:layout_width="154dp"
+            android:layout_height="wrap_content" android:id="@+id/cserver" android:textColor="#42D818"
+            android:background="#000000" android:backgroundTint="#000000" android:buttonTint="#42D818"
+            android:checked="false" android:shadowColor="#42D818"/>
+    <Button
+            android:id="@+id/connect_btn"
+            android:text="Connect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" android:backgroundTint="#42D818"/>
+
+    <ScrollView
+            android:id="@+id/chat_history"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="16dp">
+
+        <LinearLayout
+                android:id="@+id/message_layout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+    </ScrollView>
+
+    <EditText
+            android:id="@+id/edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Type your message here"
+            android:inputType="text" android:textColorHint="#42D818"/>
+
+    <Button
+            android:id="@+id/send_btn"
+            android:text="Send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" android:backgroundTint="#42D818"/>
+
+</LinearLayout>

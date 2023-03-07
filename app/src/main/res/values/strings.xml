@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Anonymous-Chat</string>
+    <string name="channel_name">Anonymous-Chat</string>
+    <string name="channel_description">Anonymous-ChatNotifications</string>
+</resources>
