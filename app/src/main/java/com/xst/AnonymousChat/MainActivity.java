@@ -8,26 +8,33 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import javax.crypto.*;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.ByteBuffer;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Base64;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import com.xst.AnonymousChat.EncryptionUtils;
 
 @SuppressLint("UseSwitchCompatOrMaterialCode")
 public class MainActivity extends AppCompatActivity {
     private EditText mIpText;
     private EditText mPortText;
     private EditText mNicknameText;
-
     // Initialize views
     private Button mConnectBtn;
     private LinearLayout mMessageLayout;
@@ -39,6 +46,16 @@ public class MainActivity extends AppCompatActivity {
     private OutputStream mOutputStream;
     private InputStream mInputStream;
     private Switch mySwitch;
+    private static final String ALGORITHM = "AES";
+    private static final String MODE = "AES/CBC/PKCS5Padding";
+
+    private static final String keyString = "aaaaaaaaaaaaaaaa";
+    private static final String ivString = "aaaaaaaaaaaaaaaa";
+
+    private static final SecretKeySpec key = new SecretKeySpec(keyString.getBytes(), ALGORITHM);
+    private static final IvParameterSpec iv = new IvParameterSpec(ivString.getBytes());
+
+
 
     private boolean mIsConnected = false;
 
@@ -158,20 +175,24 @@ public class MainActivity extends AppCompatActivity {
                         bytesRead = mInputStream.read(buffer);
                         if (bytesRead != -1) {
                             String message = new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
-                            if (message.equals("NICK")) {
+                            String message_dec = EncryptionUtils.decrypt(message);
+                            if (message_dec.equals("NICK")) {
                                 String nick = mNicknameText.getText().toString();
-                                mOutputStream.write(nick.getBytes());
+                                String nick_enc = EncryptionUtils.encrypt(nick);
+                                mOutputStream.write(nick_enc.getBytes());
                             } else {
-                                String[] List = message.split(":");
+                                String[] List = message_dec.split(":");
                                 String nick = mNicknameText.getText().toString();
                                 if(!Objects.equals(List[0], nick)){
-                                    sendNotification(message);
+                                    sendNotification(message_dec);
                                 }
-                                showMessage(message);
+                                showMessage(message_dec);
                             }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }
@@ -192,9 +213,12 @@ public class MainActivity extends AppCompatActivity {
                     // Send the message to the server
                     String nick = mNicknameText.getText().toString();
                     String modified = nick + ":" + message;
-                    mOutputStream.write(modified.getBytes());
+                    String modified_enc = EncryptionUtils.encrypt(modified);
+                    mOutputStream.write(modified_enc.getBytes());
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
             }
         }).start();
@@ -265,6 +289,4 @@ public class MainActivity extends AppCompatActivity {
         }
         notificationManager.notify(1, builder.build());
     }
-
-
 }
