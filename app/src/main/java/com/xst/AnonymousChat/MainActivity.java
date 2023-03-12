@@ -3,6 +3,7 @@ package com.xst.AnonymousChat;
 import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.util.Log;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final SecretKeySpec key = new SecretKeySpec(keyString.getBytes(), ALGORITHM);
     private static final IvParameterSpec iv = new IvParameterSpec(ivString.getBytes());
+    private static final String TAG = "MainActivity";
+
 
 
 
@@ -174,19 +177,19 @@ public class MainActivity extends AppCompatActivity {
                         // Read incoming messages from the server
                         bytesRead = mInputStream.read(buffer);
                         if (bytesRead != -1) {
-                            String message = new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
-                            String message_dec = EncryptionUtils.decrypt(message);
-                            if (message_dec.equals("NICK")) {
-                                String nick = mNicknameText.getText().toString();
-                                String nick_enc = EncryptionUtils.encrypt(nick);
-                                mOutputStream.write(nick_enc.getBytes());
+                            String message = EncryptionUtils.decrypt(new String(buffer, 0, bytesRead, StandardCharsets.UTF_8));
+                            Log.d(TAG, "Decrypted message: " + message);
+
+                            if (message.equals("NICK")) {
+                                String nick = EncryptionUtils.encrypt(mNicknameText.getText().toString());
+                                mOutputStream.write(nick.getBytes());
                             } else {
-                                String[] List = message_dec.split(":");
+                                String[] List = message.split(":");
                                 String nick = mNicknameText.getText().toString();
                                 if(!Objects.equals(List[0], nick)){
-                                    sendNotification(message_dec);
+                                    sendNotification(message);
                                 }
-                                showMessage(message_dec);
+                                showMessage(message);
                             }
                         }
                     } catch (IOException e) {
@@ -198,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
-
     private void sendMessage(final String message) {
         new Thread(new Runnable() {
             @Override
@@ -288,5 +290,16 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         notificationManager.notify(1, builder.build());
+    }
+
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mIsConnected) {
+            try {
+                mClient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -1,7 +1,8 @@
 package com.xst.AnonymousChat;
 
+import android.util.Log;
+
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -10,6 +11,8 @@ import javax.crypto.spec.SecretKeySpec;
 public class EncryptionUtils {
     private static final String INIT_VECTOR = "aaaaaaaaaaaaaaaa";
     private static final String ENCRYPTION_KEY = "aaaaaaaaaaaaaaaa";
+    private static final String TAG = "MainActivity";
+
 
     public static String encrypt(String plaintext) throws Exception {
         byte[] plaintextBytes = plaintext.getBytes("UTF-8");
@@ -42,7 +45,11 @@ public class EncryptionUtils {
         // Decode the ciphertext from base64
         byte[] ciphertextBytes = new byte[0];
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            ciphertextBytes = Base64.getDecoder().decode(ciphertext);
+            try{
+                ciphertextBytes = Base64.getDecoder().decode(ciphertext);
+            }catch (IllegalArgumentException e){
+                Log.e(TAG,"Invalid Base64 encoding: "+ e.getMessage());
+            }
         }
 
         // Create the cipher object and configure it
@@ -75,12 +82,16 @@ public class EncryptionUtils {
     }
 
     private static String unpad(String data) {
+        if (data.isEmpty()) {
+            return "";
+        }
         int pad = (int)data.charAt(data.length() - 1);
         if (data.substring(data.length() - pad).equals(new String(new char[pad]).replace('\0', (char)pad))) {
             return data.substring(0, data.length() - pad);
         }
         return data;
     }
+
 
     /*public static void main(String[] args) throws Exception {
         String plaintext = "The quick brown fox jumps over the lazy dog";
@@ -91,8 +102,3 @@ public class EncryptionUtils {
         System.out.println("Dec: "+decryptedPlaintext);
     }*/
 }
-
-
-
-
-
